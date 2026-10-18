@@ -25,12 +25,27 @@ except ImportError:
     )
 
 
-def _get_graph(host: str, port: int, graph_name: str):
+def _get_graph(
+    host: str,
+    port: int,
+    graph_name: str,
+    password: Optional[str] = None,
+    ssl: bool = False,
+):
     """Return a FalkorDB Graph object, or raise on connection failure."""
     if not _FALKORDB_AVAILABLE:
         raise RuntimeError("falkordb package is not installed.")
 
-    db = FalkorDB(host=host, port=port)
+    try:
+        from app.config import settings
+        if password is None:
+            password = settings.FALKORDB_PASSWORD
+        if not ssl:
+            ssl = settings.FALKORDB_SSL
+    except Exception:
+        pass
+
+    db = FalkorDB(host=host, port=port, password=password, ssl=ssl)
     return db.select_graph(graph_name)
 
 

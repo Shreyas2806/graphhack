@@ -44,6 +44,10 @@ class Settings:
         self.FALKORDB_HOST = os.getenv("FALKORDB_HOST", "127.0.0.1").strip()
         self.FALKORDB_PORT = int(os.getenv("FALKORDB_PORT", "6379"))
         self.FALKORDB_GRAPH = os.getenv("FALKORDB_GRAPH", "graphmind").strip()
+        pwd = os.getenv("FALKORDB_PASSWORD", "").strip()
+        self.FALKORDB_PASSWORD = pwd if pwd else None
+        ssl_env = os.getenv("FALKORDB_SSL", "false").strip().lower()
+        self.FALKORDB_SSL = ssl_env in ("true", "1", "yes")
 
         # Caching configuration (Phase 4)
         enable_cache_env = os.getenv("ENABLE_CACHE", "true").strip().lower()
