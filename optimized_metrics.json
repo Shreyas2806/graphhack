@@ -1,0 +1,45 @@
+{
+  "falkordb_ping_ms": {
+    "mean": 2.053819998400286,
+    "median": 1.7186999903060496,
+    "min": 1.430500007700175,
+    "max": 5.573900009039789
+  },
+  "graph_entity_query_ms": {
+    "uncached_ms": 6.845099967904389,
+    "cached_mean_ms": 0.010879995534196496,
+    "cached_min_ms": 0.009200011845678091,
+    "cached_max_ms": 0.02169999061152339,
+    "speedup_factor": 629.1
+  },
+  "graph_sources_retrieval_batched_ms": {
+    "mean": 2.014840004267171,
+    "median": 1.9004499772563577,
+    "min": 1.6214000061154366,
+    "max": 2.842000045347959
+  },
+  "graph_multihop_batched_ms": {
+    "mean": 1.9183000025805086,
+    "median": 1.8775499775074422,
+    "min": 1.6130000003613532,
+    "max": 2.2933000000193715
+  },
+  "api_get_graph_cached_ms": {
+    "uncached_ms": 57.362499996088445,
+    "cached_mean_ms": 3.928179992362857,
+    "cached_min_ms": 3.3970000222325325,
+    "speedup_factor": 14.6
+  },
+  "verification_deterministic_ms": {
+    "mean": 0.11918000527657568,
+    "median": 0.020499981474131346,
+    "min": 0.01910002902150154,
+    "max": 0.9962000185623765,
+    "status": "SUPPORTED"
+  },
+  "post_memory_ms": {
+    "status_code": 502,
+    "latency_ms": 357.80309996334836,
+    "facts_stored": 0
+  }
+}

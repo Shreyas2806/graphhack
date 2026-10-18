@@ -1,0 +1,15 @@
+services:
+  falkordb:
+    image: falkordb/falkordb:latest
+    container_name: graphmind-falkordb
+    ports:
+      - "127.0.0.1:6380:6379"
+      - "127.0.0.1:3000:3000"
+    environment:
+      REDIS_ARGS: "--appendonly yes"
+    volumes:
+      - falkordb_data:/var/lib/falkordb/data
+    restart: unless-stopped
+
+volumes:
+  falkordb_data:
