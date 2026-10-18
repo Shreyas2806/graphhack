@@ -1,0 +1,37 @@
+services:
+  # ── GraphMind FastAPI Backend ──────────────────────────────
+  - type: web
+    name: graphmind-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: FALKORDB_HOST
+        fromService:
+          type: pserv
+          name: graphmind-falkordb
+          property: host
+      - key: FALKORDB_PORT
+        value: 6379
+      - key: FALKORDB_GRAPH
+        value: graphmind
+      - key: ENABLE_CACHE
+        value: "true"
+
+  # ── FalkorDB Private Service with Persistent Disk ─────────
+  - type: pserv
+    name: graphmind-falkordb
+    env: image
+    image:
+      url: falkordb/falkordb:latest
+    plan: starter
+    disk:
+      name: falkordb-data
+      mountPath: /var/lib/falkordb/data
+      sizeGB: 10
