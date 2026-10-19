@@ -38,16 +38,50 @@ class Settings:
                 "Example:  GEMINI_API_KEY=AIza..."
             )
         self.GEMINI_API_KEY = api_key
+        self.GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
 
         # Optional with defaults
-        self.GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
-        self.FALKORDB_HOST = os.getenv("FALKORDB_HOST", "127.0.0.1").strip()
-        self.FALKORDB_PORT = int(os.getenv("FALKORDB_PORT", "6379"))
+        # ── FalkorDB Connection Settings ───────────────────────────────────────
+        raw_url = os.getenv("FALKORDB_URL", "").strip()
+        raw_host = os.getenv("FALKORDB_HOST", "127.0.0.1").strip()
+
+        # If raw_host contains a connection scheme, treat it as a URL
+        if raw_host.startswith(("falkor://", "falkors://", "redis://", "rediss://")):
+            raw_url = raw_host
+
+        self.FALKORDB_URL: Optional[str] = raw_url if raw_url else None
+
+        # Parse host:port if embedded in FALKORDB_HOST (common in cloud endpoint strings)
+        if not self.FALKORDB_URL and ":" in raw_host and not raw_host.startswith(("http://", "https://")):
+            parts = raw_host.split(":", 1)
+            self.FALKORDB_HOST = parts[0].strip()
+            try:
+                self.FALKORDB_PORT = int(parts[1].strip())
+            except ValueError:
+                self.FALKORDB_PORT = int(os.getenv("FALKORDB_PORT", "6379"))
+        else:
+            self.FALKORDB_HOST = raw_host
+            self.FALKORDB_PORT = int(os.getenv("FALKORDB_PORT", "6379"))
+
         self.FALKORDB_GRAPH = os.getenv("FALKORDB_GRAPH", "graphmind").strip()
+
+        user = os.getenv("FALKORDB_USERNAME", "").strip()
+        self.FALKORDB_USERNAME: Optional[str] = user if user else None
+
         pwd = os.getenv("FALKORDB_PASSWORD", "").strip()
-        self.FALKORDB_PASSWORD = pwd if pwd else None
-        ssl_env = os.getenv("FALKORDB_SSL", "false").strip().lower()
-        self.FALKORDB_SSL = ssl_env in ("true", "1", "yes")
+        self.FALKORDB_PASSWORD: Optional[str] = pwd if pwd else None
+
+        ssl_env = os.getenv("FALKORDB_SSL", "").strip().lower()
+        if ssl_env in ("true", "1", "yes"):
+            self.FALKORDB_SSL = True
+        elif ssl_env in ("false", "0", "no"):
+            self.FALKORDB_SSL = False
+        else:
+            # Auto-enable SSL if using secure scheme (falkors:// or rediss://)
+            self.FALKORDB_SSL = bool(
+                (self.FALKORDB_URL and self.FALKORDB_URL.startswith(("falkors://", "rediss://")))
+                or raw_host.startswith(("falkors://", "rediss://"))
+            )
 
         # Caching configuration (Phase 4)
         enable_cache_env = os.getenv("ENABLE_CACHE", "true").strip().lower()
